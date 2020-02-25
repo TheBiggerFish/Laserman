@@ -97,13 +97,19 @@ class Board:
                     dir = Space.mirrorReflect(dir=dir,type=self[pos].object)
                 pos = pos + dir
     
-    def drop(self,who):
+    def drop(self,who,which):
         if who == 1 and self.p1.mirror > 0:
             self.p1.mirror -= 1
-            self[self.p1.pos] = Space(Object.MIRROR_1)
+            if which == 1:
+                self[self.p1.pos] = Space(Object.MIRROR_1)
+            elif which == 2:
+                self[self.p1.pos] = Space(Object.MIRROR_2)
         if who == 2 and self.p2.mirror > 0:
             self.p2.mirror -= 1
-            self[self.p2.pos] = Space(Object.MIRROR_1)
+            if which == 1:
+                self[self.p2.pos] = Space(Object.MIRROR_1)
+            elif which == 2:
+                self[self.p2.pos] = Space(Object.MIRROR_2)
 
 
     def timeStep(self):

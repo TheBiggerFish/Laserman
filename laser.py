@@ -22,8 +22,10 @@ fire = {
     '\n': 2
 }
 drop = {
-    'e': 1,
-    'o': 2
+    'q': (1,1),
+    'e': (1,2),
+    'u': (2,1),
+    'o': (2,2)
 }
 
 def main(stdscr):
@@ -45,8 +47,8 @@ def main(stdscr):
         elif char in fire:
             board.fire(fire[char])
         elif char in drop:
-            board.drop(drop[char])
-        elif char == 'q':
+            board.drop(drop[char][0],drop[char][1])
+        elif len(char) == 1 and ord(char) == 27:
             return
 
 

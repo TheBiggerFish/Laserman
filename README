@@ -1,0 +1,29 @@
+Written By: Cameron Haddock
+Last Edited: 24 February 2020
+Project: Laserman (Game Dev Club)
+
+This program is meant as a prototype for the Spring 2020 Game Dev Club semester project
+
+
+To Play:
+    Exit: [ESC]
+    Player 1:
+        Move:
+            Up: W
+            Down: S
+            Left: A
+            Right: D
+        Place Mirror: 
+            Back Slash: Q
+            Forward Slash: E
+        Fire Laser: [SPACE]
+    Player 2:
+        Move:
+            Up: I
+            Down: K
+            Left: J
+            Right: L
+        Place Mirror:
+            Back Slash: U
+            Forward Slash: O
+        Fire Laser: [ENTER]
