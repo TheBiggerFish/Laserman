@@ -10,8 +10,6 @@ class Board:
         self.p1 = Player(pos=Coord(0,0),facing=Direction.RIGHT)
         self.p2 = Player(pos=Coord(Board.width-1,Board.height-1),facing=Direction.LEFT)
         self.grid = Board.newGrid()
-        self.p1FL = {} #Player 1 firing line
-        self.p2FL = {} #Player 2 firing line
 
     def __getitem__(self,pos):
         return self.grid[pos.y][pos.x]
@@ -54,73 +52,63 @@ class Board:
                     return True
         return False
 
+    def getPlayer(self,who):
+        if who == 1:
+            return self.p1
+        elif who == 2:
+            return self.p2
+        else:
+            raise Exception()
+
     def move(self,who,where):
-        if who == 1 and self.p1.firing == 0:
-            if self.spaceOpen(self.p1.pos + Coord.dir(where)):
-                self.p1.pos += Coord.dir(where)
-            self.p1.facing = where
-        elif who == 2 and self.p2.firing == 0:
-            if self.spaceOpen(self.p2.pos + Coord.dir(where)):
-                self.p2.pos += Coord.dir(where)
-            self.p2.facing = where
+        player = self.getPlayer(who)
+        
+        if player.firing == 0:
+            if self.spaceOpen(player.pos + Coord.dir(where)):
+                player.pos += Coord.dir(where)
+            player.facing = where
+
 
     def gameOver(self):
         return self.p1.lives == 0 or self.p2.lives == 0
 
     def fire(self,who):
-        if who == 1:
-            self.p1.firing = 20
-            dir = self.p1.facing
-            pos = self.p1.pos + dir
-            while self.on(pos) and not self[pos].isWall():
-                if dir == Direction.RIGHT or dir == Direction.LEFT:
-                    self.p1FL[pos] = '\u2014 '
-                else:
-                    self.p1FL[pos] = '|'
-                if self[pos].isMirror():
-                    del self.p1FL[pos]
-                    dir = Space.mirrorReflect(dir=dir,type=self[pos].object)
-                pos = pos + dir
+        player = self.getPlayer(who)
+        
+        player.firing = 20
+        dir = player.facing
+        pos = player.pos + dir
+        while self.on(pos) and not self[pos].isWall():
+            if dir == Direction.RIGHT or dir == Direction.LEFT:
+                player.firingLine[pos] = '\u2014 '
+            else:
+                player.firingLine[pos] = '|'
+            if self[pos].isMirror():
+                del player.firingLine[pos]
+                dir = Space.mirrorReflect(dir=dir,type=self[pos].object)
+            pos = pos + dir
 
-
-        elif who == 2:
-            self.p2.firing = 20
-            dir = self.p2.facing
-            pos = self.p2.pos + dir
-            while self.on(pos) and not self[pos].isWall():
-                if dir == Direction.RIGHT or dir == Direction.LEFT:
-                    self.p2FL[pos] = '\u2014 '
-                else:
-                    self.p2FL[pos] = '|'
-                if self[pos].isMirror():
-                    del self.p2FL[pos]
-                    dir = Space.mirrorReflect(dir=dir,type=self[pos].object)
-                pos = pos + dir
     
     def drop(self,who,which):
-        if who == 1 and self.p1.mirror > 0:
-            self.p1.mirror -= 1
+        player = self.getPlayer(who)
+
+        if player.mirrors > 0:
+            player.mirrors -= 1
             if which == 1:
-                self[self.p1.pos] = Space(Object.MIRROR_1)
+                self[player.pos] = Space(Object.MIRROR_1)
             elif which == 2:
-                self[self.p1.pos] = Space(Object.MIRROR_2)
-        if who == 2 and self.p2.mirror > 0:
-            self.p2.mirror -= 1
-            if which == 1:
-                self[self.p2.pos] = Space(Object.MIRROR_1)
-            elif which == 2:
-                self[self.p2.pos] = Space(Object.MIRROR_2)
+                self[player.pos] = Space(Object.MIRROR_2)
 
 
     def timeStep(self):
         if self.p1.firing > 0:
             self.p1.firing -= 1
             if self.p1.firing == 0:
-                self.p1FL.clear()
+                self.p1.firingLine.clear()
         if self.p2.firing > 0:
             self.p2.firing -= 1
             if self.p2.firing == 0:
-                self.p2FL.clear()
+                self.p2.firingLine.clear()
     
     def drawBoard(self,stdscr):
         curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
@@ -132,9 +120,9 @@ class Board:
                     stdscr.addstr(row,col*2,str(self.p1)+' ',curses.color_pair(1))
                 elif self.p2.at(Coord(col,row)):
                     stdscr.addstr(row,col*2,str(self.p2)+' ',curses.color_pair(2))
-                elif Coord(col,row) in self.p1FL:
-                    stdscr.addstr(row,col*2,self.p1FL[Coord(col,row)],curses.color_pair(3))
-                elif Coord(col,row) in self.p2FL:
-                    stdscr.addstr(row,col*2,self.p2FL[Coord(col,row)],curses.color_pair(3))
+                elif Coord(col,row) in self.p1.firingLine:
+                    stdscr.addstr(row,col*2,self.p1.firingLine[Coord(col,row)],curses.color_pair(3))
+                elif Coord(col,row) in self.p2.firingLine:
+                    stdscr.addstr(row,col*2,self.p2.firingLine[Coord(col,row)],curses.color_pair(3))
                 else:
                     stdscr.addstr(row,col*2,str(self.grid[row][col])+' ')

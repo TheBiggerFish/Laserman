@@ -4,9 +4,10 @@ class Player():
     def __init__(self,pos,facing):
         self.pos = pos
         self.facing = facing
-        self.mirror = 3
+        self.mirrors = 3
         self.lives = 3
         self.firing = 0
+        self.firingLine = {}
 
     def __str__(self):
         if self.facing == Direction.UP:
