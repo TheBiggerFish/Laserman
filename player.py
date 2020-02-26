@@ -24,4 +24,11 @@ class Player():
     def at(self,pos):
         return self.pos == pos
 
+    def fired(self):
+        if self.firing > 0:
+            self.firing -= 1
+            if self.firing == 0:
+                self.firingLine.clear()
+
+
     

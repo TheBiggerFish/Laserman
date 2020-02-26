@@ -27,6 +27,9 @@ class Space:
     
     def isWall(self):
         return self.object == Object.WALL
+    
+    def isRock(self):
+        return self.object == Object.ROCK
 
     def isMirror(self):
         return self.object == Object.MIRROR_1 or self.object == Object.MIRROR_2

@@ -48,9 +48,17 @@ class Board:
     def spaceOpen(self,pos):
         if Board.on(pos):
             if self[pos].isEmpty():
-                if self.p1.pos != Coord(pos.x,pos.y) and self.p2.pos != Coord(pos.x,pos.y):
+                if self.playerAt(pos) is None:
                     return True
         return False
+
+    def playerAt(self,pos):
+        if self.p1.pos == pos:
+            return self.p1
+        elif self.p2.pos == pos:
+            return self.p2
+        else:
+            return None
 
     def getPlayer(self,who):
         if who == 1:
@@ -79,13 +87,18 @@ class Board:
         dir = player.facing
         pos = player.pos + dir
         while self.on(pos) and not self[pos].isWall():
-            if dir == Direction.RIGHT or dir == Direction.LEFT:
-                player.firingLine[pos] = '\u2014 '
+            target = self.playerAt(pos)
+            if target is not None:
+                target.lives -= 1
+
+            if self[pos].isMirror():
+                dir = Space.mirrorReflect(dir=dir,type=self[pos].object)
+
+            elif dir == Direction.RIGHT or dir == Direction.LEFT:
+                player.firingLine[pos] = '\u2014'
+
             else:
                 player.firingLine[pos] = '|'
-            if self[pos].isMirror():
-                del player.firingLine[pos]
-                dir = Space.mirrorReflect(dir=dir,type=self[pos].object)
             pos = pos + dir
 
     
@@ -101,14 +114,8 @@ class Board:
 
 
     def timeStep(self):
-        if self.p1.firing > 0:
-            self.p1.firing -= 1
-            if self.p1.firing == 0:
-                self.p1.firingLine.clear()
-        if self.p2.firing > 0:
-            self.p2.firing -= 1
-            if self.p2.firing == 0:
-                self.p2.firingLine.clear()
+        self.p1.fired()
+        self.p2.fired()
     
     def drawBoard(self,stdscr):
         curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)

@@ -5,17 +5,16 @@ import time
 
 
 
-p1Moves = {
-    'w': Direction.UP,
-    'a': Direction.LEFT,
-    's': Direction.DOWN,
-    'd': Direction.RIGHT
-}
-p2Moves = {
-    'i': Direction.UP,
-    'j': Direction.LEFT,
-    'k': Direction.DOWN,
-    'l': Direction.RIGHT
+moves = {
+    'w': (1, Direction.UP),
+    'a': (1, Direction.LEFT),
+    's': (1, Direction.DOWN),
+    'd': (1, Direction.RIGHT),
+    
+    'i': (2, Direction.UP),
+    'j': (2, Direction.LEFT),
+    'k': (2, Direction.DOWN),
+    'l': (2, Direction.RIGHT)
 }
 fire = {
     ' ': 1,
@@ -40,16 +39,19 @@ def main(stdscr):
         except:
             continue
         
-        if char in p1Moves:
-            board.move(1,p1Moves[char])
-        elif char in p2Moves:
-            board.move(2,p2Moves[char])
+        if char in moves:
+            board.move(moves[char][0],moves[char][1])
         elif char in fire:
             board.fire(fire[char])
         elif char in drop:
             board.drop(drop[char][0],drop[char][1])
         elif len(char) == 1 and ord(char) == 27:
             return
+
+    stdscr.nodelay(False)
+    stdscr.clear()
+    stdscr.addstr(1,1,'Game over')
+    stdscr.getkey()
 
 
 
